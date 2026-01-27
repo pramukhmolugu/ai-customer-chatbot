@@ -35,6 +35,7 @@ const KnowledgeBase = {
             /don'?t\s*(want|like)/i
         ],
         payment: [
+            /^pay(ment)?s?$/i,
             /pay(ment)?\s*(method|option|way)/i,
             /credit\s*card/i,
             /debit\s*card/i,
@@ -46,6 +47,7 @@ const KnowledgeBase = {
             /payment\s*(fail|issue|problem|error)/i
         ],
         shipping: [
+            /^ship(ping)?$/i,
             /ship(ping)?\s*(cost|fee|charge|rate|option)/i,
             /free\s*ship(ping)?/i,
             /delivery\s*(time|option|fee)/i,
@@ -64,7 +66,7 @@ const KnowledgeBase = {
             /product\s*(info|information|detail)/i
         ],
         account: [
-            /account/i,
+            /^account$/i,
             /password/i,
             /login|log\s*in/i,
             /sign\s*(up|in)/i,
@@ -77,11 +79,13 @@ const KnowledgeBase = {
             /how\s*are\s*you/i
         ],
         thanks: [
+            /^thanks?$/i,
             /thank(s|\s*you)/i,
             /appreciate/i,
             /helpful/i
         ],
         bye: [
+            /^bye$/i,
             /bye|goodbye|see\s*you|talk\s*later/i,
             /that'?s\s*all/i,
             /^(ok|okay|got\s*it)$/i
@@ -157,7 +161,7 @@ const KnowledgeBase = {
      */
     detectIntent(message) {
         const text = message.toLowerCase().trim();
-        
+
         for (const [intent, patterns] of Object.entries(this.patterns)) {
             for (const pattern of patterns) {
                 if (pattern.test(text)) {
@@ -165,7 +169,7 @@ const KnowledgeBase = {
                 }
             }
         }
-        
+
         return 'fallback';
     },
 
@@ -183,12 +187,12 @@ const KnowledgeBase = {
     processMessage(message) {
         const intent = this.detectIntent(message);
         const response = this.getResponse(intent);
-        
+
         return {
             intent,
             text: response.text,
             followUp: response.followUp || [],
-            confidence: intent === 'fallback' ? 0.3 : 0.9
+            confidence: intent === 'fallback' ? 'low' : 'high'
         };
     }
 };
