@@ -125,8 +125,7 @@ NEVER:
 
         const modelsToTry = [
             'gemini-1.5-flash',
-            'gemini-1.5-flash-latest',
-            'gemini-pro'
+            'gemini-1.5-flash-latest'
         ];
 
         const activeModel = modelsToTry[retryCount] || modelsToTry[0];
