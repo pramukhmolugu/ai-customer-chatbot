@@ -7,7 +7,7 @@ const GeminiAI = {
     // Configuration
     config: {
         apiKey: null,
-        model: 'gemini-2.0-flash-lite',
+        model: 'gemini-pro',
         apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/',
         systemPrompt: `You are ShopAssist AI, a friendly and helpful customer support chatbot for an e-commerce store.
 
