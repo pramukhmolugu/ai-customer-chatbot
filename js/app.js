@@ -93,6 +93,11 @@ const App = {
             }
         });
 
+        // Settings button (to re-open API key modal)
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            this.showApiKeyModal();
+        });
+
         // Focus input on load
         ChatUI.focusInput();
     },
@@ -133,8 +138,13 @@ const App = {
         }
 
         // Save and initialize
-        GeminiAI.init(apiKey);
-        this.state.useGemini = true;
+        const success = GeminiAI.init(apiKey);
+        this.state.useGemini = success;
+
+        console.log('🔑 API Key saved:', apiKey.substring(0, 10) + '...');
+        console.log('🧠 Gemini configured:', GeminiAI.isConfigured());
+        console.log('📊 App state useGemini:', this.state.useGemini);
+
         this.hideApiKeyModal();
 
         // Add confirmation message
@@ -143,7 +153,7 @@ const App = {
             ['What can you help with?', 'Tell me about your features', 'Track my order']
         );
 
-        console.log('🧠 Gemini AI connected');
+        console.log('🧠 Gemini AI connected successfully');
     },
 
     /**
@@ -184,10 +194,17 @@ const App = {
         try {
             let response;
 
+            console.log('🔍 Processing message:', message);
+            console.log('🧠 useGemini:', this.state.useGemini);
+            console.log('🔧 Gemini configured:', GeminiAI.isConfigured());
+
             // Use Gemini if configured, otherwise use knowledge base
             if (this.state.useGemini && GeminiAI.isConfigured()) {
+                console.log('📡 Calling Gemini API...');
                 response = await GeminiAI.getResponse(message);
+                console.log('📬 Gemini response:', response);
             } else {
+                console.log('📚 Using knowledge base fallback');
                 // Use knowledge base
                 const kbResponse = KnowledgeBase.processMessage(message);
                 response = {
