@@ -79,7 +79,7 @@ Current store policies:
     /**
      * Send message to Gemini API
      */
-    async sendMessage(userMessage) {
+    async sendMessage(userMessage, retryWithModel = null) {
         if (!this.config.apiKey) {
             return {
                 success: false,
@@ -88,20 +88,26 @@ Current store policies:
             };
         }
 
-        // Add user message to history
-        this.conversationHistory.push({
-            role: 'user',
-            parts: [{ text: userMessage }]
-        });
+        const activeModel = retryWithModel || this.config.model;
 
-        // Keep conversation history manageable (last 10 exchanges)
-        if (this.conversationHistory.length > 20) {
-            this.conversationHistory = this.conversationHistory.slice(-20);
+        // Add user message to history only if not a retry
+        if (!retryWithModel) {
+            this.conversationHistory.push({
+                role: 'user',
+                parts: [{ text: userMessage }]
+            });
+
+            // Keep conversation history manageable (last 10 exchanges)
+            if (this.conversationHistory.length > 20) {
+                this.conversationHistory = this.conversationHistory.slice(-20);
+            }
         }
 
         try {
+            console.log(`📡 Sending to Gemini (${activeModel})...`);
+
             const response = await fetch(
-                `${this.config.apiUrl}${this.config.model}:generateContent?key=${this.config.apiKey}`,
+                `${this.config.apiUrl}${activeModel}:generateContent?key=${this.config.apiKey}`,
                 {
                     method: 'POST',
                     headers: {
@@ -131,9 +137,16 @@ Current store policies:
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Gemini API error:', errorData);
+                const errorMessage = errorData.error?.message || 'Unknown error';
+                console.error(`Gemini API error (${activeModel}):`, errorData);
 
-                if (response.status === 400 && errorData.error?.message?.includes('API key')) {
+                // Self-healing: If model not found and we haven't retried yet, try 'gemini-pro'
+                if (!retryWithModel && (errorMessage.includes('not found') || errorMessage.includes('supported'))) {
+                    console.log('🔄 Primary model failed. Retrying with gemini-pro...');
+                    return await this.sendMessage(userMessage, 'gemini-pro');
+                }
+
+                if (response.status === 400 && errorMessage.includes('API key')) {
                     return {
                         success: false,
                         error: 'Invalid API key. Please check your Gemini API key.',
@@ -141,7 +154,7 @@ Current store policies:
                     };
                 }
 
-                throw new Error(errorData.error?.message || 'API request failed');
+                throw new Error(errorMessage);
             }
 
             const data = await response.json();
@@ -166,7 +179,7 @@ Current store policies:
             };
 
         } catch (error) {
-            console.error('Gemini API error:', error);
+            console.error(`Gemini API error (${activeModel}):`, error);
             return {
                 success: false,
                 error: error.message,
