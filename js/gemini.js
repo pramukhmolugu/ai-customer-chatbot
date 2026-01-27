@@ -8,7 +8,7 @@ const GeminiAI = {
     config: {
         apiKey: null,
         model: 'gemini-1.5-flash',
-        apiUrl: 'https://generativelanguage.googleapis.com/v1/models/',
+        apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/',
         systemPrompt: `You are ShopAssist AI, a friendly and helpful customer support chatbot for an e-commerce store.
 
 Your personality:
@@ -108,33 +108,16 @@ Current store policies:
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        contents: [
-                            {
-                                role: 'user',
-                                parts: [{ text: this.config.systemPrompt }]
-                            },
-                            {
-                                role: 'model',
-                                parts: [{ text: 'I understand. I am ShopAssist AI, ready to help customers with their shopping needs. How can I assist you today?' }]
-                            },
-                            ...this.conversationHistory
-                        ],
+                        system_instruction: {
+                            parts: [{ text: this.config.systemPrompt }]
+                        },
+                        contents: this.conversationHistory,
                         generationConfig: {
                             temperature: 0.7,
                             topK: 40,
                             topP: 0.95,
                             maxOutputTokens: 500
-                        },
-                        safetySettings: [
-                            {
-                                category: 'HARM_CATEGORY_HARASSMENT',
-                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                            },
-                            {
-                                category: 'HARM_CATEGORY_HATE_SPEECH',
-                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                            }
-                        ]
+                        }
                     })
                 }
             );
@@ -189,11 +172,23 @@ Current store policies:
      * Get smart response with fallback
      */
     async getResponse(message) {
-        // Try Gemini first if configured
+        // First check knowledge base for high-confidence matches
+        const kbResponse = KnowledgeBase.processMessage(message);
+
+        // If knowledge base has a good answer (not the generic fallback), use it
+        if (kbResponse.confidence !== 'low') {
+            return {
+                text: kbResponse.text,
+                source: 'knowledge_base',
+                followUp: kbResponse.followUp
+            };
+        }
+
+        // Try Gemini for questions the knowledge base can't handle
         if (this.isConfigured()) {
-            console.log('📡 Calling Gemini API...');
+            console.log('📡 Trying Gemini for complex question...');
             const geminiResponse = await this.sendMessage(message);
-            console.log('📬 Gemini raw response:', geminiResponse);
+            console.log('📬 Gemini response:', geminiResponse);
 
             if (geminiResponse.success) {
                 return {
@@ -201,19 +196,10 @@ Current store policies:
                     source: 'gemini',
                     followUp: this.generateFollowUp(message)
                 };
-            } else {
-                // Show error to user instead of silent fallback
-                console.error('❌ Gemini API error:', geminiResponse.error);
-                return {
-                    text: `⚠️ **AI Connection Issue**\n\nI couldn't connect to Gemini AI: ${geminiResponse.error || 'Unknown error'}\n\nPlease try again or check your API key in settings (⚙️).`,
-                    source: 'error',
-                    followUp: ['Try again', 'Check settings', 'Use demo mode']
-                };
             }
         }
 
-        // Fallback to knowledge base
-        const kbResponse = KnowledgeBase.processMessage(message);
+        // Use knowledge base fallback
         return {
             text: kbResponse.text,
             source: 'knowledge_base',
