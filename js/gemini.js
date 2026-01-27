@@ -8,43 +8,34 @@ const GeminiAI = {
     config: {
         apiKey: null,
         model: 'gemini-1.5-flash',
-        apiUrl: 'https://generativelanguage.googleapis.com/v1/models/',
+        apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/',
         systemPrompt: `You are ShopAssist AI, a friendly and helpful customer support chatbot for an e-commerce store.
 
 Your personality:
 - Warm, professional, and helpful
-- Use emojis sparingly to add friendliness
-- Keep responses concise but informative
-- Always try to solve the customer's problem
+- Enthusiastic about helping customers find products
+- Concise but thorough in your answers
 
-You can help with:
-- Order tracking and status inquiries
-- Returns and refund policies
-- Payment methods and issues
-- Product recommendations
-- Shipping information
-- General store questions
+Your knowledge base:
+- Shipping: Free for orders over $50. Standard (3-5 days) is $5. Express (1-2 days) is $15.
+- Returns: 30-day return policy for unused items in original packaging.
+- Payments: We accept Visa, Mastercard, AMEX, PayPal, and Apple Pay.
+- Hours: Mon-Fri 9am-6pm EST.
 
 Guidelines:
-- If you don't know something specific (like a real order number), politely ask for more details
-- Suggest helpful next steps
-- Be empathetic if the customer has an issue
-- Keep responses under 150 words unless more detail is needed
-
-Current store policies:
-- 30-day return policy
-- Free shipping over $50
-- We accept all major credit cards, PayPal, and digital wallets
-- Standard shipping: 5-7 days, Express: 2-3 days`
+1. Always stay in character as ShopAssist AI.
+2. If you don't know the answer, offer to connect them with a human agent.
+3. Keep responses relatively short (under 3 sentences when possible).
+4. Use formatting like bullet points for clarity when listing options.`
     },
 
-    // Conversation history for context
+    // Conversation history to maintain context
     conversationHistory: [],
 
     /**
-     * Initialize with API key
+     * Initialize Gemini AI with API key
      */
-    init(apiKey) {
+    init(apiKey = null) {
         if (apiKey) {
             this.config.apiKey = apiKey;
             localStorage.setItem('gemini_api_key', apiKey);
@@ -77,9 +68,9 @@ Current store policies:
     },
 
     /**
-     * Send message to Gemini API
+     * Send message to Gemini API with sequential model failover
      */
-    async sendMessage(userMessage, retryWithModel = null) {
+    async sendMessage(userMessage, retryCount = 0) {
         if (!this.config.apiKey) {
             return {
                 success: false,
@@ -88,26 +79,33 @@ Current store policies:
             };
         }
 
-        const activeModel = retryWithModel || this.config.model;
+        // List of models to try in sequence for maximum compatibility
+        const modelsToTry = [
+            'gemini-1.5-flash',
+            'gemini-1.5-flash-latest',
+            'gemini-pro'
+        ];
+
+        const activeModel = modelsToTry[retryCount] || modelsToTry[0];
 
         // Add user message to history only if not a retry
-        if (!retryWithModel) {
+        if (retryCount === 0) {
             this.conversationHistory.push({
                 role: 'user',
                 parts: [{ text: userMessage }]
             });
 
-            // Keep conversation history manageable (last 10 exchanges)
+            // Keep conversation history manageable
             if (this.conversationHistory.length > 20) {
                 this.conversationHistory = this.conversationHistory.slice(-20);
             }
         }
 
         try {
-            console.log(`📡 Sending to Gemini (${activeModel})...`);
+            console.log(`📡 Sending to Gemini (${activeModel}) via v1beta...`);
 
             const response = await fetch(
-                `${this.config.apiUrl}${activeModel}:generateContent?key=${this.config.apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${this.config.apiKey}`,
                 {
                     method: 'POST',
                     headers: {
@@ -129,7 +127,7 @@ Current store policies:
                             temperature: 0.7,
                             topK: 40,
                             topP: 0.95,
-                            maxOutputTokens: 500
+                            maxOutputTokens: 800
                         }
                     })
                 }
@@ -140,16 +138,17 @@ Current store policies:
                 const errorMessage = errorData.error?.message || 'Unknown error';
                 console.error(`Gemini API error (${activeModel}):`, errorData);
 
-                // Self-healing: If model not found and we haven't retried yet, try 'gemini-pro'
-                if (!retryWithModel && (errorMessage.includes('not found') || errorMessage.includes('supported'))) {
-                    console.log('🔄 Primary model failed. Retrying with gemini-pro...');
-                    return await this.sendMessage(userMessage, 'gemini-pro');
+                // Self-healing: If model not found and we have more models to try
+                if (retryCount < modelsToTry.length - 1 &&
+                    (errorMessage.includes('not found') || errorMessage.includes('supported') || errorMessage.includes('not available'))) {
+                    console.log(`🔄 Model ${activeModel} failed. Retrying with ${modelsToTry[retryCount + 1]}...`);
+                    return await this.sendMessage(userMessage, retryCount + 1);
                 }
 
                 if (response.status === 400 && errorMessage.includes('API key')) {
                     return {
                         success: false,
-                        error: 'Invalid API key. Please check your Gemini API key.',
+                        error: 'Invalid API key. Please check your settings.',
                         fallback: true
                     };
                 }
@@ -179,7 +178,7 @@ Current store policies:
             };
 
         } catch (error) {
-            console.error(`Gemini API error (${activeModel}):`, error);
+            console.error(`Gemini connectivity error (${activeModel}):`, error);
             return {
                 success: false,
                 error: error.message,
@@ -207,9 +206,8 @@ Current store policies:
 
         // Try Gemini for questions the knowledge base can't handle
         if (this.isConfigured()) {
-            console.log('📡 Trying Gemini for complex question...');
+            console.log('📡 Trying Gemini (v1beta)...');
             const geminiResponse = await this.sendMessage(message);
-            console.log('📬 Gemini response:', geminiResponse);
 
             if (geminiResponse.success) {
                 return {
@@ -217,19 +215,18 @@ Current store policies:
                     source: 'gemini',
                     followUp: this.generateFollowUp(message)
                 };
-            } else {
-                // Return visible error if Gemini fails, instead of silent fallback to KB's fallback
-                console.error('❌ Gemini mission failed:', geminiResponse.error);
+            } else if (!geminiResponse.fallback) {
+                // If it's a real API error (not just unconfigured)
                 return {
-                    text: `⚠️ **AI Bot Issue**\n\nI tried asking Gemini to help with this, but it ran into an error: *"${geminiResponse.error || 'Unknown API error'}"*\n\nCheck your API key in settings (⚙️) or stick with my basic assistant for now!`,
+                    text: `⚠️ **AI Bot Issue**\n\nI tried asking Gemini to help with this, but it ran into an error: *"${geminiResponse.error}"*\n\nCheck your API key in settings (⚙️) or stick with my basic assistant for now!`,
                     source: 'error',
                     followUp: ['Check settings', 'Return to home']
                 };
             }
         }
 
-        // Use knowledge base fallback if AI not configured or something else goes wrong
-        console.log('🔄 No AI or fallback needed - using KB fallback');
+        // Use knowledge base fallback
+        console.log('🔄 Using KB fallback');
         return {
             text: kbResponse.text,
             source: 'knowledge_base',
@@ -238,25 +235,20 @@ Current store policies:
     },
 
     /**
-     * Generate contextual follow-up suggestions
+     * Generate smart follow-up questions
      */
     generateFollowUp(message) {
         const lowerMessage = message.toLowerCase();
 
-        if (lowerMessage.includes('order') || lowerMessage.includes('track')) {
-            return ['Check another order', 'Return an item', 'Contact support'];
-        }
-        if (lowerMessage.includes('return') || lowerMessage.includes('refund')) {
-            return ['Start return process', 'Check refund status', 'Need help with something else'];
-        }
-        if (lowerMessage.includes('pay') || lowerMessage.includes('card')) {
-            return ['Update payment method', 'View order history', 'Other questions'];
-        }
-        if (lowerMessage.includes('recommend') || lowerMessage.includes('product')) {
-            return ['Show best sellers', 'Browse categories', 'View deals'];
+        if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('buy')) {
+            return ['How to order', 'Payment methods', 'Shipping info'];
         }
 
-        return ['Track my order', 'Product help', 'Talk to support'];
+        if (lowerMessage.includes('return') || lowerMessage.includes('broken') || lowerMessage.includes('wrong')) {
+            return ['Return policy', 'Talk to human', 'Track my order'];
+        }
+
+        return ['What else can you do?', 'Help with products', 'Shipping info'];
     },
 
     /**
@@ -264,6 +256,7 @@ Current store policies:
      */
     clearHistory() {
         this.conversationHistory = [];
+        ChatUI.addBotMessage('Chat history cleared. How else can I help you?');
     }
 };
 
