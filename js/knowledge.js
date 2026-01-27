@@ -76,15 +76,18 @@ const KnowledgeBase = {
             /update\s*(my)?\s*(info|information|detail)/i
         ],
         help: [
-            /what\s*(can|do)\s*you\s*(do|help\s*with)/i,
+            /what\s*(can|do)\s*you\s*(do|help|provide)/i,
+            /can\s*you\s*do/i,
             /capabilities/i,
             /how\s*to\s*use/i,
             /help\s*me/i,
-            /commands/i
+            /commands/i,
+            /what\s*is\s*this/i
         ],
         greeting: [
-            /(hi|hello|hey|good\s*(morning|afternoon|evening)|greetings)/i,
-            /how\s*are\s*you/i
+            /(hi|hello|hey|morning|afternoon|evening|greetings)/i,
+            /how\s*are\s*you/i,
+            /yo\s*/i
         ],
         thanks: [
             /thanks?/i,
