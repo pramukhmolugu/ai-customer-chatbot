@@ -177,6 +177,7 @@ Current store policies:
 
         // If knowledge base has a good answer (not the generic fallback), use it
         if (kbResponse.confidence !== 'low') {
+            console.log('📚 KnowledgeBase matched with high confidence:', kbResponse.intent);
             return {
                 text: kbResponse.text,
                 source: 'knowledge_base',
@@ -196,10 +197,19 @@ Current store policies:
                     source: 'gemini',
                     followUp: this.generateFollowUp(message)
                 };
+            } else {
+                // Return visible error if Gemini fails, instead of silent fallback to KB's fallback
+                console.error('❌ Gemini mission failed:', geminiResponse.error);
+                return {
+                    text: `⚠️ **AI Bot Issue**\n\nI tried asking Gemini to help with this, but it ran into an error: *"${geminiResponse.error || 'Unknown API error'}"*\n\nCheck your API key in settings (⚙️) or stick with my basic assistant for now!`,
+                    source: 'error',
+                    followUp: ['Check settings', 'Return to home']
+                };
             }
         }
 
-        // Use knowledge base fallback
+        // Use knowledge base fallback if AI not configured or something else goes wrong
+        console.log('🔄 No AI or fallback needed - using KB fallback');
         return {
             text: kbResponse.text,
             source: 'knowledge_base',

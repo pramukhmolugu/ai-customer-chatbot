@@ -12,6 +12,7 @@ const KnowledgeBase = {
         SHIPPING: 'shipping',
         PRODUCTS: 'products',
         ACCOUNT: 'account',
+        HELP: 'help',
         GENERAL: 'general'
     },
 
@@ -35,7 +36,7 @@ const KnowledgeBase = {
             /don'?t\s*(want|like)/i
         ],
         payment: [
-            /^pay(ment)?s?$/i,
+            /pay(ment)?s?/i,
             /pay(ment)?\s*(method|option|way)/i,
             /credit\s*card/i,
             /debit\s*card/i,
@@ -47,7 +48,7 @@ const KnowledgeBase = {
             /payment\s*(fail|issue|problem|error)/i
         ],
         shipping: [
-            /^ship(ping)?$/i,
+            /ship(ping)?/i,
             /ship(ping)?\s*(cost|fee|charge|rate|option)/i,
             /free\s*ship(ping)?/i,
             /delivery\s*(time|option|fee)/i,
@@ -66,7 +67,7 @@ const KnowledgeBase = {
             /product\s*(info|information|detail)/i
         ],
         account: [
-            /^account$/i,
+            /account/i,
             /password/i,
             /login|log\s*in/i,
             /sign\s*(up|in)/i,
@@ -74,21 +75,28 @@ const KnowledgeBase = {
             /profile/i,
             /update\s*(my)?\s*(info|information|detail)/i
         ],
+        help: [
+            /what\s*(can|do)\s*you\s*(do|help\s*with)/i,
+            /capabilities/i,
+            /how\s*to\s*use/i,
+            /help\s*me/i,
+            /commands/i
+        ],
         greeting: [
-            /^(hi|hello|hey|good\s*(morning|afternoon|evening)|greetings)/i,
+            /(hi|hello|hey|good\s*(morning|afternoon|evening)|greetings)/i,
             /how\s*are\s*you/i
         ],
         thanks: [
-            /^thanks?$/i,
+            /thanks?/i,
             /thank(s|\s*you)/i,
             /appreciate/i,
             /helpful/i
         ],
         bye: [
-            /^bye$/i,
+            /bye/i,
             /bye|goodbye|see\s*you|talk\s*later/i,
             /that'?s\s*all/i,
-            /^(ok|okay|got\s*it)$/i
+            /(ok|okay|got\s*it)/i
         ]
     },
 
@@ -146,6 +154,12 @@ const KnowledgeBase = {
             {
                 text: `👋 Thanks for chatting with ShopAssist!\n\nHave a wonderful day, and happy shopping! 🛒✨\n\nFeel free to come back anytime you need help!`,
                 followUp: []
+            }
+        ],
+        help: [
+            {
+                text: `🛠️ **What I Can Do**\n\nI am your ShopAssist AI, here to make your experience smooth. I can help you with:\n\n• 📦 **Order Updates**: Track current shipments or view history.\n• 🔄 **Returns**: Guide you through our 30-day return policy.\n• 💳 **Payments**: Answer questions about accepted methods or issues.\n• 🛍️ **Shopping**: Recommend products based on your preferences.\n\nYou can also link me to **Gemini AI** (⚙️) for even smarter conversational support!`,
+                followUp: ['Track my order', 'Return policy', 'Payment methods', 'Product help']
             }
         ],
         fallback: [
