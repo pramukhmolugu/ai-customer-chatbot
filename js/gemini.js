@@ -1,6 +1,7 @@
 /**
  * Gemini AI Integration
  * Uses Google's Generative AI API for intelligent responses
+ * Enhanced system prompt for product recommendations
  */
 
 const GeminiAI = {
@@ -9,24 +10,68 @@ const GeminiAI = {
         apiKey: null,
         model: 'gemini-1.5-flash',
         apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/',
-        systemPrompt: `You are ShopAssist AI, a friendly and helpful customer support chatbot for an e-commerce store.
+        systemPrompt: `You are ShopAssist AI, a friendly and knowledgeable customer support chatbot for an e-commerce store called "ShopAssist".
 
-Your personality:
-- Warm, professional, and helpful
-- Enthusiastic about helping customers find products
-- Concise but thorough in your answers
+YOUR PERSONALITY:
+- Warm, professional, and genuinely enthusiastic about helping customers
+- Conversational but efficient - don't ramble
+- Use emojis sparingly to add warmth (1-2 per response max)
 
-Your knowledge base:
-- Shipping: Free for orders over $50. Standard (3-5 days) is $5. Express (1-2 days) is $15.
-- Returns: 30-day return policy for unused items in original packaging.
-- Payments: We accept Visa, Mastercard, AMEX, PayPal, and Apple Pay.
-- Hours: Mon-Fri 9am-6pm EST.
+PRODUCT KNOWLEDGE - You sell products in these categories:
 
-Guidelines:
-1. Always stay in character as ShopAssist AI.
-2. If you don't know the answer, offer to connect them with a human agent.
-3. Keep responses relatively short (under 3 sentences when possible).
-4. Use formatting like bullet points for clarity when listing options.`
+📱 ELECTRONICS & GADGETS:
+- Smart home devices (speakers, lights, thermostats)
+- Headphones & earbuds ($29-$349)
+- Portable chargers & power banks
+- Wireless keyboards & mice
+- Streaming devices (Roku, Fire TV, Chromecast)
+
+👕 FASHION & APPAREL:
+- Men's & women's casual wear
+- Athletic wear & activewear
+- Accessories (watches, bags, sunglasses)
+- Seasonal collections
+
+🏠 HOME & LIVING:
+- Kitchen gadgets & appliances
+- Bedding & linens
+- Organization & storage solutions
+- Decor items
+
+💄 BEAUTY & PERSONAL CARE:
+- Skincare sets & individual products
+- Hair care tools & products
+- Makeup & cosmetics
+- Personal grooming devices
+
+🏃 SPORTS & FITNESS:
+- Yoga mats & accessories
+- Resistance bands & weights
+- Fitness trackers
+- Water bottles & gym bags
+
+GIFT RECOMMENDATION EXAMPLES:
+- Coffee lover: Premium coffee maker ($79), electric grinder ($45), coffee subscription box ($25/mo), insulated travel mug ($28)
+- Tech enthusiast: Wireless earbuds ($129), smart home starter kit ($99), portable power bank ($35)
+- Fitness fan: Smart water bottle ($45), yoga mat set ($55), resistance band kit ($32)
+- Home cook: Air fryer ($89), knife set ($120), smart kitchen scale ($35)
+
+STORE POLICIES:
+- Shipping: Standard 5-7 days ($4.99), Express 2-3 days ($9.99), Next Day ($14.99). FREE on orders $50+
+- Returns: 30 days, unused items in original packaging. Free return shipping.
+- Payment: Visa, Mastercard, Amex, Discover, PayPal, Apple Pay, Google Pay, Affirm, Klarna
+
+RESPONSE GUIDELINES:
+1. For product questions: Suggest 2-4 specific items with prices
+2. For gift recommendations: Ask about budget if not mentioned, then give personalized suggestions
+3. Keep responses under 150 words unless the question requires more detail
+4. Always offer to help further or provide more options
+5. If you don't know something specific, offer to connect them with a human agent
+
+NEVER:
+- Make up product names that don't fit the categories above
+- Provide false information about policies
+- Be pushy or use high-pressure sales tactics`
     },
 
     // Conversation history to maintain context
@@ -42,7 +87,6 @@ Guidelines:
             return true;
         }
 
-        // Try to load from localStorage
         const savedKey = localStorage.getItem('gemini_api_key');
         if (savedKey) {
             this.config.apiKey = savedKey;
@@ -79,7 +123,6 @@ Guidelines:
             };
         }
 
-        // List of models to try in sequence for maximum compatibility
         const modelsToTry = [
             'gemini-1.5-flash',
             'gemini-1.5-flash-latest',
@@ -88,24 +131,22 @@ Guidelines:
 
         const activeModel = modelsToTry[retryCount] || modelsToTry[0];
 
-        // Add user message to history only if not a retry
         if (retryCount === 0) {
             this.conversationHistory.push({
                 role: 'user',
                 parts: [{ text: userMessage }]
             });
 
-            // Keep conversation history manageable
             if (this.conversationHistory.length > 20) {
                 this.conversationHistory = this.conversationHistory.slice(-20);
             }
         }
 
         try {
-            console.log(`📡 Sending to Gemini (${activeModel}) via v1beta...`);
+            console.log(`📡 Trying Gemini (${activeModel})...`);
 
             const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${this.config.apiKey}`,
+                `https://generativelanguage.googleapis.com/v1/models/${activeModel}:generateContent?key=${this.config.apiKey}`,
                 {
                     method: 'POST',
                     headers: {
@@ -119,7 +160,7 @@ Guidelines:
                             },
                             {
                                 role: 'model',
-                                parts: [{ text: 'I understand. I am ShopAssist AI. How can I help you today?' }]
+                                parts: [{ text: 'Understood! I am ShopAssist AI, ready to help with product recommendations, orders, returns, and more. How can I assist you today?' }]
                             },
                             ...this.conversationHistory
                         ],
@@ -138,7 +179,6 @@ Guidelines:
                 const errorMessage = errorData.error?.message || 'Unknown error';
                 console.error(`Gemini API error (${activeModel}):`, errorData);
 
-                // Self-healing: If model not found and we have more models to try
                 if (retryCount < modelsToTry.length - 1 &&
                     (errorMessage.includes('not found') || errorMessage.includes('supported') || errorMessage.includes('not available'))) {
                     console.log(`🔄 Model ${activeModel} failed. Retrying with ${modelsToTry[retryCount + 1]}...`);
@@ -157,15 +197,12 @@ Guidelines:
             }
 
             const data = await response.json();
-
-            // Extract response text
             const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
             if (!responseText) {
                 throw new Error('No response generated');
             }
 
-            // Add assistant response to history
             this.conversationHistory.push({
                 role: 'model',
                 parts: [{ text: responseText }]
@@ -188,15 +225,14 @@ Guidelines:
     },
 
     /**
-     * Get smart response with fallback
+     * Get smart response - KB for FAQ, Gemini for everything else
      */
     async getResponse(message) {
-        // First check knowledge base for high-confidence matches
         const kbResponse = KnowledgeBase.processMessage(message);
 
-        // If knowledge base has a good answer (not the generic fallback), use it
-        if (kbResponse.confidence !== 'low') {
-            console.log('📚 KnowledgeBase matched with high confidence:', kbResponse.intent);
+        // If KB has a confident match (not fallback), use it
+        if (kbResponse.confidence === 'high' && kbResponse.text !== null) {
+            console.log('📚 Using KB response for:', kbResponse.intent);
             return {
                 text: kbResponse.text,
                 source: 'knowledge_base',
@@ -204,9 +240,9 @@ Guidelines:
             };
         }
 
-        // Try Gemini for questions the knowledge base can't handle
+        // Otherwise, use Gemini
         if (this.isConfigured()) {
-            console.log('📡 Trying Gemini (v1beta)...');
+            console.log('🧠 Routing to Gemini AI...');
             const geminiResponse = await this.sendMessage(message);
 
             if (geminiResponse.success) {
@@ -215,40 +251,41 @@ Guidelines:
                     source: 'gemini',
                     followUp: this.generateFollowUp(message)
                 };
-            } else if (!geminiResponse.fallback) {
-                // If it's a real API error (not just unconfigured)
+            } else {
+                console.error('❌ Gemini failed:', geminiResponse.error);
                 return {
-                    text: `⚠️ **AI Bot Issue**\n\nI tried asking Gemini to help with this, but it ran into an error: *"${geminiResponse.error}"*\n\nCheck your API key in settings (⚙️) or stick with my basic assistant for now!`,
+                    text: `⚠️ I'm having trouble connecting to my AI brain right now.\n\nError: *${geminiResponse.error}*\n\nPlease check your API key in settings (⚙️) or try again later.`,
                     source: 'error',
-                    followUp: ['Check settings', 'Return to home']
+                    followUp: ['Check settings', 'Try again']
                 };
             }
         }
 
-        // Use knowledge base fallback
-        console.log('🔄 Using KB fallback');
+        // No Gemini configured - use generic fallback
         return {
-            text: kbResponse.text,
-            source: 'knowledge_base',
-            followUp: kbResponse.followUp
+            text: `🤔 I'd love to help with that! For personalized recommendations, please set up your Gemini API key in settings (⚙️).\n\nOr try one of these:`,
+            source: 'fallback',
+            followUp: ['Track order', 'Returns', 'Shipping info', 'Payment help']
         };
     },
 
     /**
-     * Generate smart follow-up questions
+     * Generate contextual follow-up suggestions
      */
     generateFollowUp(message) {
-        const lowerMessage = message.toLowerCase();
+        const lower = message.toLowerCase();
 
-        if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('buy')) {
-            return ['How to order', 'Payment methods', 'Shipping info'];
+        if (lower.includes('gift') || lower.includes('recommend')) {
+            return ['More gift ideas', 'Different price range', 'Another category'];
+        }
+        if (lower.includes('order') || lower.includes('track')) {
+            return ['Track another order', 'Return this item', 'Contact support'];
+        }
+        if (lower.includes('return') || lower.includes('refund')) {
+            return ['Start a return', 'Check refund status', 'Talk to human'];
         }
 
-        if (lowerMessage.includes('return') || lowerMessage.includes('broken') || lowerMessage.includes('wrong')) {
-            return ['Return policy', 'Talk to human', 'Track my order'];
-        }
-
-        return ['What else can you do?', 'Help with products', 'Shipping info'];
+        return ['Tell me more', 'Different question', 'Help'];
     },
 
     /**
@@ -256,7 +293,6 @@ Guidelines:
      */
     clearHistory() {
         this.conversationHistory = [];
-        ChatUI.addBotMessage('Chat history cleared. How else can I help you?');
     }
 };
 

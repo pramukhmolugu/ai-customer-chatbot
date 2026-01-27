@@ -1,6 +1,7 @@
 /**
  * Knowledge Base for ShopAssist AI
- * Contains FAQ responses and pattern matching
+ * Contains FAQ responses and STRICT pattern matching
+ * Only matches EXPLICIT FAQ requests - specific questions go to Gemini
  */
 
 const KnowledgeBase = {
@@ -16,91 +17,68 @@ const KnowledgeBase = {
         GENERAL: 'general'
     },
 
-    // Pattern matching for intent detection
+    // STRICT Pattern matching - only matches explicit FAQ requests
+    // Specific questions like "gift for coffee lover" should fall through to Gemini
     patterns: {
         order_tracking: [
-            /track(ing)?(\s+my)?\s*(order|package|shipment)/i,
-            /where('?s|\s+is)?\s*(my)?\s*(order|package)/i,
-            /order\s*(status|update|updates|history)/i,
-            /when\s*(will|does)\s*(my)?\s*(order|package|it)\s*(arrive|come|get here)/i,
-            /delivery\s*(status|update|updates|time)/i,
-            /order\s*(id|number)/i,
-            /my\s*order/i
+            /^track\s*(my\s*)?(order|package)$/i,
+            /^order\s*(status|tracking)$/i,
+            /^where('?s|\s+is)\s+my\s+(order|package)$/i,
+            /^check\s*(my\s*)?(order|delivery|shipment)$/i
         ],
         returns: [
-            /return(s|ing)?(\s+an?|\s+my)?\s*(item|product|order)?/i,
-            /refund/i,
-            /exchange/i,
-            /send\s*(it)?\s*back/i,
-            /return\s*policy/i,
-            /how\s*(do|can)\s*i\s*return/i,
-            /don'?t\s*(want|like)/i
+            /^return\s*(policy|an?\s*item)?$/i,
+            /^returns?\s*(&|and)?\s*refunds?$/i,
+            /^how\s*(do|can)\s*i\s*return/i,
+            /^refund\s*(policy)?$/i,
+            /^exchange\s*(policy)?$/i
         ],
         payment: [
-            /pay(ment)?s?/i,
-            /pay(ment)?\s*(method|option|way)/i,
-            /credit\s*card/i,
-            /debit\s*card/i,
-            /paypal/i,
-            /apple\s*pay/i,
-            /google\s*pay/i,
-            /how\s*(do|can)\s*i\s*pay/i,
-            /accept\s*(what|which)\s*(card|payment)/i,
-            /payment\s*(fail|issue|problem|error)/i
+            /^payment\s*(method|option|question)s?$/i,
+            /^(what|which)\s*(payment|card)s?\s*(do\s*you\s*)?(accept|take)/i,
+            /^(how\s*)?(can|do)\s*i\s*pay/i,
+            /^credit\s*card/i,
+            /^paypal/i
         ],
         shipping: [
-            /ship(ping)?/i,
-            /ship(ping)?\s*(cost|fee|charge|rate|option)/i,
-            /free\s*ship(ping)?/i,
-            /delivery\s*(time|option|fee)/i,
-            /how\s*long\s*(does|will)\s*(shipping|delivery)/i,
-            /international\s*ship(ping)?/i,
-            /express\s*ship(ping)?/i
+            /^shipping\s*(info|option|cost|rate|time)s?$/i,
+            /^(how\s*)?long\s*(does|will)\s*(shipping|delivery)/i,
+            /^delivery\s*(time|option|cost)s?$/i,
+            /^free\s*shipping/i
         ],
         products: [
-            /recommend(ation)?/i,
-            /suggest(ion)?/i,
-            /best\s*(sell(ing|er)|product)/i,
-            /popular/i,
-            /what\s*(should|would)\s*you\s*recommend/i,
-            /looking\s*for/i,
-            /need\s*help\s*(finding|choosing)/i,
-            /product\s*(info|information|detail)/i
+            /^product\s*(categor|recommend)/i,
+            /^(your|the)\s*products?$/i,
+            /^what\s*(do\s*you|products?\s*do\s*you)\s*(sell|have|offer)/i,
+            /^show\s*(me\s*)?(your\s*)?products?$/i
         ],
         account: [
-            /account/i,
-            /password/i,
-            /login|log\s*in/i,
-            /sign\s*(up|in)/i,
-            /email/i,
-            /profile/i,
-            /update\s*(my)?\s*(info|information|detail)/i
+            /^(my\s*)?account$/i,
+            /^(reset|forgot)\s*(my\s*)?password$/i,
+            /^login\s*(help|issue|problem)?$/i,
+            /^sign\s*(up|in)$/i
         ],
         help: [
-            /what\s*(can|do)\s*you\s*(do|help|provide)/i,
-            /can\s*you\s*do/i,
-            /capabilities/i,
-            /how\s*to\s*use/i,
-            /help\s*me/i,
-            /commands/i,
-            /what\s*is\s*this/i
+            /^help$/i,
+            /^what\s*can\s*you\s*(do|help)/i,
+            /^(your\s*)?capabilities$/i,
+            /^menu$/i
         ],
         greeting: [
-            /(hi|hello|hey|morning|afternoon|evening|greetings)/i,
-            /how\s*are\s*you/i,
-            /yo\s*/i
+            /^(hi|hello|hey|yo)!?$/i,
+            /^good\s*(morning|afternoon|evening)!?$/i,
+            /^greetings?!?$/i
         ],
         thanks: [
-            /thanks?/i,
-            /thank(s|\s*you)/i,
-            /appreciate/i,
-            /helpful/i
+            /^thanks?!?$/i,
+            /^thank\s*you!?$/i,
+            /^appreciate\s*(it|that)?!?$/i
         ],
         bye: [
-            /bye/i,
-            /bye|goodbye|see\s*you|talk\s*later/i,
-            /that'?s\s*all/i,
-            /(ok|okay|got\s*it)/i
+            /^bye!?$/i,
+            /^goodbye!?$/i,
+            /^(that'?s\s*)?all!?$/i,
+            /^(ok|okay|done|exit)!?$/i
         ]
     },
 
@@ -109,7 +87,7 @@ const KnowledgeBase = {
         order_tracking: [
             {
                 text: `📦 **Track Your Order**\n\nTo track your order, please provide your order number (found in your confirmation email).\n\nAlternatively, you can:\n• Check your email for tracking updates\n• Log into your account → Order History\n• Use our tracking page with your order ID\n\n🔍 Would you like me to help you find your order number?`,
-                followUp: ['I have my order number', 'I can\'t find my order number', 'Check order history']
+                followUp: ['I have my order number', 'Check order history', 'Talk to support']
             }
         ],
         returns: [
@@ -126,50 +104,50 @@ const KnowledgeBase = {
         ],
         shipping: [
             {
-                text: `🚚 **Shipping Options**\n\n| Option | Time | Cost |\n|--------|------|------|\n| Standard | 5-7 days | $4.99 |\n| Express | 2-3 days | $9.99 |\n| Next Day | 1 day | $14.99 |\n\n✨ **FREE shipping** on orders over $50!\n\n🌍 We ship to 50+ countries internationally.\n\nNeed expedited shipping for a specific order?`,
-                followUp: ['International shipping', 'Change shipping speed', 'Track package']
+                text: `🚚 **Shipping Options**\n\n| Option | Time | Cost |\n|--------|------|------|\n| Standard | 5-7 days | $4.99 |\n| Express | 2-3 days | $9.99 |\n| Next Day | 1 day | $14.99 |\n\n✨ **FREE shipping** on orders over $50!\n\n🌍 We ship to 50+ countries internationally.`,
+                followUp: ['International shipping', 'Track package', 'Expedite my order']
             }
         ],
         products: [
             {
-                text: `🛍️ **Product Recommendations**\n\nI'd love to help you find the perfect product!\n\n**Our top categories:**\n• 📱 Electronics & Gadgets\n• 👕 Fashion & Apparel\n• 🏠 Home & Living\n• 💄 Beauty & Personal Care\n• 🏃 Sports & Fitness\n\nWhat type of product are you looking for? Or tell me your budget and preferences!`,
+                text: `🛍️ **Product Categories**\n\nWe offer a wide range of products:\n\n• 📱 Electronics & Gadgets\n• 👕 Fashion & Apparel\n• 🏠 Home & Living\n• 💄 Beauty & Personal Care\n• 🏃 Sports & Fitness\n\nTell me what you're looking for and I can give you personalized recommendations!`,
                 followUp: ['Electronics', 'Fashion', 'Home goods', 'Best sellers']
             }
         ],
         account: [
             {
-                text: `👤 **Account Help**\n\nI can help you with:\n• **Password Reset**: Use "Forgot Password" on login page\n• **Update Info**: Go to Account Settings\n• **Order History**: View all past orders\n• **Saved Addresses**: Manage shipping addresses\n\n🔐 For security changes, you may need to verify your email.\n\nWhat would you like to do with your account?`,
+                text: `👤 **Account Help**\n\nI can help you with:\n• **Password Reset**: Use "Forgot Password" on login page\n• **Update Info**: Go to Account Settings\n• **Order History**: View all past orders\n• **Saved Addresses**: Manage shipping addresses\n\n🔐 For security changes, you may need to verify your email.`,
                 followUp: ['Reset password', 'Update email', 'View orders']
             }
         ],
         greeting: [
             {
-                text: `👋 Hello there! Great to see you!\n\nI'm ShopAssist, your AI shopping assistant. I'm here to help you with:\n• 📦 Order tracking\n• 🔄 Returns & refunds\n• 💳 Payment questions\n• 🛍️ Product recommendations\n\nHow can I make your shopping experience better today?`,
-                followUp: ['Track my order', 'I have a question', 'Just browsing']
+                text: `👋 Hello! I'm ShopAssist AI, your personal shopping assistant!\n\nI can help you with:\n• 📦 Order tracking\n• 🔄 Returns & refunds\n• 💳 Payment questions\n• 🛍️ Product recommendations\n\nHow can I help you today?`,
+                followUp: ['Track my order', 'Product recommendations', 'Help']
             }
         ],
         thanks: [
             {
-                text: `😊 You're welcome! I'm happy I could help!\n\nIs there anything else you'd like assistance with? I'm here 24/7!`,
-                followUp: ['Yes, another question', 'No, that\'s all', 'Rate this chat']
+                text: `😊 You're welcome! Happy I could help!\n\nIs there anything else you need?`,
+                followUp: ['Yes, another question', 'No, that\'s all']
             }
         ],
         bye: [
             {
-                text: `👋 Thanks for chatting with ShopAssist!\n\nHave a wonderful day, and happy shopping! 🛒✨\n\nFeel free to come back anytime you need help!`,
+                text: `👋 Thanks for chatting! Have a wonderful day and happy shopping! 🛒✨`,
                 followUp: []
             }
         ],
         help: [
             {
-                text: `🛠️ **What I Can Do**\n\nI am your ShopAssist AI, here to make your experience smooth. I can help you with:\n\n• 📦 **Order Updates**: Track current shipments or view history.\n• 🔄 **Returns**: Guide you through our 30-day return policy.\n• 💳 **Payments**: Answer questions about accepted methods or issues.\n• 🛍️ **Shopping**: Recommend products based on your preferences.\n\nYou can also link me to **Gemini AI** (⚙️) for even smarter conversational support!`,
-                followUp: ['Track my order', 'Return policy', 'Payment methods', 'Product help']
+                text: `🛠️ **What I Can Do**\n\nI'm ShopAssist AI! I can help with:\n\n• 📦 **Orders**: Track shipments, view history\n• 🔄 **Returns**: Guide you through returns\n• 💳 **Payments**: Answer payment questions\n• 🛍️ **Shopping**: Personalized recommendations\n\nJust ask me anything! For complex questions, I use Gemini AI.`,
+                followUp: ['Track my order', 'Return policy', 'Product help']
             }
         ],
         fallback: [
             {
-                text: `🤔 I want to make sure I understand you correctly.\n\nCould you tell me more about what you need help with?\n\nOr try one of these options:`,
-                followUp: ['Track order', 'Returns', 'Payments', 'Talk to human']
+                text: null, // null means: "Don't use KB fallback, go to Gemini instead"
+                followUp: []
             }
         ]
     },
@@ -183,11 +161,14 @@ const KnowledgeBase = {
         for (const [intent, patterns] of Object.entries(this.patterns)) {
             for (const pattern of patterns) {
                 if (pattern.test(text)) {
+                    console.log(`📌 KB matched intent: ${intent}`);
                     return intent;
                 }
             }
         }
 
+        // No match - let Gemini handle it
+        console.log('📌 No KB match - routing to Gemini');
         return 'fallback';
     },
 
@@ -206,11 +187,21 @@ const KnowledgeBase = {
         const intent = this.detectIntent(message);
         const response = this.getResponse(intent);
 
+        // If response.text is null, it means "use Gemini"
+        if (response.text === null) {
+            return {
+                intent: 'fallback',
+                text: null,
+                followUp: [],
+                confidence: 'low'
+            };
+        }
+
         return {
             intent,
             text: response.text,
             followUp: response.followUp || [],
-            confidence: intent === 'fallback' ? 'low' : 'high'
+            confidence: 'high'
         };
     }
 };
