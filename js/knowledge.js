@@ -21,10 +21,11 @@ const KnowledgeBase = {
         order_tracking: [
             /track(ing)?(\s+my)?\s*(order|package|shipment)/i,
             /where('?s|\s+is)?\s*(my)?\s*(order|package)/i,
-            /order\s*status/i,
+            /order\s*(status|update|updates|history)/i,
             /when\s*(will|does)\s*(my)?\s*(order|package|it)\s*(arrive|come|get here)/i,
-            /delivery\s*(status|update|time)/i,
-            /order\s*(id|number)/i
+            /delivery\s*(status|update|updates|time)/i,
+            /order\s*(id|number)/i,
+            /my\s*order/i
         ],
         returns: [
             /return(s|ing)?(\s+an?|\s+my)?\s*(item|product|order)?/i,
