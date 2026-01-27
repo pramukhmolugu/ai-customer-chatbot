@@ -8,7 +8,7 @@ const GeminiAI = {
     config: {
         apiKey: null,
         model: 'gemini-1.5-flash',
-        apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/',
+        apiUrl: 'https://generativelanguage.googleapis.com/v1/models/',
         systemPrompt: `You are ShopAssist AI, a friendly and helpful customer support chatbot for an e-commerce store.
 
 Your personality:
@@ -108,10 +108,17 @@ Current store policies:
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        system_instruction: {
-                            parts: [{ text: this.config.systemPrompt }]
-                        },
-                        contents: this.conversationHistory,
+                        contents: [
+                            {
+                                role: 'user',
+                                parts: [{ text: this.config.systemPrompt }]
+                            },
+                            {
+                                role: 'model',
+                                parts: [{ text: 'I understand. I am ShopAssist AI. How can I help you today?' }]
+                            },
+                            ...this.conversationHistory
+                        ],
                         generationConfig: {
                             temperature: 0.7,
                             topK: 40,
