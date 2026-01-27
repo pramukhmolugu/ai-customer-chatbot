@@ -7,7 +7,8 @@ const App = {
     // Application state
     state: {
         isProcessing: false,
-        messageCount: 0
+        messageCount: 0,
+        useGemini: false
     },
 
     /**
@@ -16,14 +17,25 @@ const App = {
     init() {
         console.log('🤖 ShopAssist AI initializing...');
 
-        // Initialize UI
+        // Initialize modules
+        ThemeSwitcher.init();
         ChatUI.init();
+        VoiceInput.init();
+
+        // Initialize Gemini AI
+        const hasApiKey = GeminiAI.init();
+        this.state.useGemini = hasApiKey;
 
         // Bind event listeners
         this.bindEvents();
 
-        // Ready
+        // Show API key modal if not configured
+        if (!hasApiKey) {
+            this.showApiKeyModal();
+        }
+
         console.log('✅ ShopAssist AI ready!');
+        console.log(`🧠 AI Mode: ${hasApiKey ? 'Gemini' : 'Demo (Knowledge Base)'}`);
     },
 
     /**
@@ -61,11 +73,77 @@ const App = {
         ChatUI.elements.clearBtn.addEventListener('click', () => {
             if (confirm('Clear chat history?')) {
                 ChatUI.clearChat();
+                GeminiAI.clearHistory();
+            }
+        });
+
+        // API Key Modal
+        document.getElementById('saveApiKey').addEventListener('click', () => {
+            this.saveApiKey();
+        });
+
+        document.getElementById('skipApiKey').addEventListener('click', () => {
+            this.hideApiKeyModal();
+        });
+
+        // API key input enter key
+        document.getElementById('apiKeyInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.saveApiKey();
             }
         });
 
         // Focus input on load
         ChatUI.focusInput();
+    },
+
+    /**
+     * Show API key modal
+     */
+    showApiKeyModal() {
+        const modal = document.getElementById('apiKeyModal');
+        modal.classList.add('active');
+    },
+
+    /**
+     * Hide API key modal
+     */
+    hideApiKeyModal() {
+        const modal = document.getElementById('apiKeyModal');
+        modal.classList.remove('active');
+        ChatUI.focusInput();
+    },
+
+    /**
+     * Save API key from modal
+     */
+    saveApiKey() {
+        const input = document.getElementById('apiKeyInput');
+        const apiKey = input.value.trim();
+
+        if (!apiKey) {
+            alert('Please enter an API key or click "Skip" to use demo mode.');
+            return;
+        }
+
+        // Validate key format (basic check)
+        if (!apiKey.startsWith('AIza')) {
+            alert('Invalid API key format. Gemini API keys start with "AIza".');
+            return;
+        }
+
+        // Save and initialize
+        GeminiAI.init(apiKey);
+        this.state.useGemini = true;
+        this.hideApiKeyModal();
+
+        // Add confirmation message
+        ChatUI.addBotMessage(
+            '✅ **Gemini AI Connected!**\n\nI\'m now powered by Google\'s Gemini AI for more intelligent and natural conversations. Go ahead, ask me anything!',
+            ['What can you help with?', 'Tell me about your features', 'Track my order']
+        );
+
+        console.log('🧠 Gemini AI connected');
     },
 
     /**
@@ -99,13 +177,25 @@ const App = {
         // Show typing indicator
         ChatUI.showTyping();
 
-        // Simulate realistic response delay
-        const delay = this.calculateDelay(message);
+        // Calculate delay (realistic typing time)
+        const delay = this.calculateDelay();
         await this.sleep(delay);
 
         try {
-            // Get smart response (AI + Knowledge Base hybrid)
-            const response = await AIService.getSmartResponse(message);
+            let response;
+
+            // Use Gemini if configured, otherwise use knowledge base
+            if (this.state.useGemini && GeminiAI.isConfigured()) {
+                response = await GeminiAI.getResponse(message);
+            } else {
+                // Use knowledge base
+                const kbResponse = KnowledgeBase.processMessage(message);
+                response = {
+                    text: kbResponse.text,
+                    source: 'knowledge_base',
+                    followUp: kbResponse.followUp
+                };
+            }
 
             // Hide typing
             ChatUI.hideTyping();
@@ -113,15 +203,15 @@ const App = {
             // Add bot response
             ChatUI.addBotMessage(response.text, response.followUp);
 
-            // Log for debugging
-            console.log(`📝 Response source: ${response.source}, Intent: ${response.intent}`);
+            // Log source
+            console.log(`📝 Response source: ${response.source}`);
 
         } catch (error) {
             console.error('Error processing message:', error);
 
             ChatUI.hideTyping();
             ChatUI.addBotMessage(
-                `I apologize, but I encountered an issue. Please try again or contact our support team.\n\n📞 Support: 1-800-SHOP-HELP\n📧 Email: support@shopassist.com`,
+                `I apologize, but I encountered an issue. Please try again.\n\n💡 **Tip:** If this persists, try refreshing the page.`,
                 ['Try again', 'Contact support']
             );
         }
@@ -135,15 +225,11 @@ const App = {
     /**
      * Calculate realistic typing delay
      */
-    calculateDelay(message) {
-        // Base delay + variable based on expected response length
-        const baseDelay = 800;
-        const variableDelay = Math.random() * 1000;
-
-        // Longer messages might need more "thinking" time
-        const thinkingTime = Math.min(message.length * 20, 1000);
-
-        return baseDelay + variableDelay + thinkingTime;
+    calculateDelay() {
+        // Gemini needs a bit more time
+        const baseDelay = this.state.useGemini ? 500 : 800;
+        const variableDelay = Math.random() * 800;
+        return baseDelay + variableDelay;
     },
 
     /**

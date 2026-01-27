@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Header -->
@@ -17,21 +19,38 @@
             <div class="header-left">
                 <div class="bot-avatar">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="currentColor"/>
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
+                            fill="currentColor" />
                     </svg>
                 </div>
                 <div class="header-info">
                     <h1>ShopAssist AI</h1>
                     <span class="status">
                         <span class="status-dot"></span>
-                        Online
+                        <span id="statusText">Online</span>
                     </span>
                 </div>
             </div>
             <div class="header-right">
+                <!-- Theme Toggle -->
+                <button class="icon-btn" id="themeToggle" title="Toggle theme">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"
+                            fill="currentColor" />
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"
+                            fill="currentColor" />
+                    </svg>
+                </button>
+                <!-- Clear Chat -->
                 <button class="icon-btn" id="clearChat" title="Clear chat">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/>
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                            fill="currentColor" />
                     </svg>
                 </button>
             </div>
@@ -43,12 +62,14 @@
             <div class="message bot-message">
                 <div class="message-avatar">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="currentColor"/>
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
+                            fill="currentColor" />
                     </svg>
                 </div>
                 <div class="message-content">
                     <div class="message-bubble">
-                        <p>👋 Hello! I'm ShopAssist AI, your intelligent shopping assistant.</p>
+                        <p>👋 Hello! I'm ShopAssist AI, powered by <strong>Google Gemini</strong>.</p>
                         <p>I can help you with:</p>
                         <ul>
                             <li>📦 Order tracking & status</li>
@@ -56,7 +77,7 @@
                             <li>💳 Payment questions</li>
                             <li>🛍️ Product recommendations</li>
                         </ul>
-                        <p>How can I assist you today?</p>
+                        <p>🎤 <em>Try speaking to me using the microphone button!</em></p>
                     </div>
                     <span class="message-time">Just now</span>
                 </div>
@@ -66,8 +87,10 @@
             <div class="quick-replies" id="quickReplies">
                 <button class="quick-reply-btn" data-message="Track my order">📦 Track my order</button>
                 <button class="quick-reply-btn" data-message="How do I return an item?">🔄 Return an item</button>
-                <button class="quick-reply-btn" data-message="What payment methods do you accept?">💳 Payment options</button>
-                <button class="quick-reply-btn" data-message="I need product recommendations">🛍️ Recommendations</button>
+                <button class="quick-reply-btn" data-message="What payment methods do you accept?">💳 Payment
+                    options</button>
+                <button class="quick-reply-btn" data-message="I need product recommendations">🛍️
+                    Recommendations</button>
             </div>
         </main>
 
@@ -75,7 +98,9 @@
         <div class="typing-indicator" id="typingIndicator">
             <div class="message-avatar">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="currentColor"/>
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
+                        fill="currentColor" />
                 </svg>
             </div>
             <div class="typing-dots">
@@ -88,25 +113,50 @@
         <!-- Input Area -->
         <footer class="chat-input">
             <div class="input-container">
-                <input 
-                    type="text" 
-                    id="messageInput" 
-                    placeholder="Type your message..." 
-                    autocomplete="off"
-                >
+                <!-- Voice Button -->
+                <button class="voice-btn" id="voiceBtn" title="Speak to chat">
+                    <svg class="mic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"
+                            fill="currentColor" />
+                    </svg>
+                    <svg class="mic-off-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"
+                            fill="currentColor" />
+                    </svg>
+                </button>
+                <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off">
                 <button class="send-btn" id="sendBtn">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor" />
                     </svg>
                 </button>
             </div>
-            <p class="powered-by">Powered by AI • Built by Pramukh</p>
+            <p class="powered-by">Powered by <strong>Gemini AI</strong> • Built by Pramukh</p>
         </footer>
     </div>
 
+    <!-- API Key Modal -->
+    <div class="modal" id="apiKeyModal">
+        <div class="modal-content">
+            <h2>🔑 Enter Gemini API Key</h2>
+            <p>Get your free API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI
+                    Studio</a></p>
+            <input type="password" id="apiKeyInput" placeholder="Paste your API key here...">
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="skipApiKey">Skip (Use Demo Mode)</button>
+                <button class="btn-primary" id="saveApiKey">Save & Connect</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/knowledge.js"></script>
-    <script src="js/ai.js"></script>
+    <script src="js/gemini.js"></script>
+    <script src="js/voice.js"></script>
+    <script src="js/theme.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/app.js"></script>
 </body>
+
 </html>
