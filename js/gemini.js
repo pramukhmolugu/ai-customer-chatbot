@@ -191,13 +191,23 @@ Current store policies:
     async getResponse(message) {
         // Try Gemini first if configured
         if (this.isConfigured()) {
+            console.log('📡 Calling Gemini API...');
             const geminiResponse = await this.sendMessage(message);
+            console.log('📬 Gemini raw response:', geminiResponse);
 
             if (geminiResponse.success) {
                 return {
                     text: geminiResponse.text,
                     source: 'gemini',
                     followUp: this.generateFollowUp(message)
+                };
+            } else {
+                // Show error to user instead of silent fallback
+                console.error('❌ Gemini API error:', geminiResponse.error);
+                return {
+                    text: `⚠️ **AI Connection Issue**\n\nI couldn't connect to Gemini AI: ${geminiResponse.error || 'Unknown error'}\n\nPlease try again or check your API key in settings (⚙️).`,
+                    source: 'error',
+                    followUp: ['Try again', 'Check settings', 'Use demo mode']
                 };
             }
         }
