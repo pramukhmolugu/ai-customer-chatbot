@@ -187,16 +187,22 @@ body {
 }
 
 @keyframes pulse-fast {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+    }
 
-    0%,
+    70% {
+        opacity: 0.7;
+        transform: scale(1.2);
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+
     100% {
         opacity: 1;
         transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.7;
-        transform: scale(1.2);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
     }
 }
 
