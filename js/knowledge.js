@@ -40,21 +40,73 @@ const KnowledgeBase = {
             /delivery.*cost/i,
             /how.*long.*ship/i
         ],
+        // Gift category patterns - specific takes priority over general
+        gift_coffee: [
+            /coffee.*lover/i,
+            /coffee.*gift/i,
+            /gift.*coffee/i
+        ],
+        gift_tech: [
+            /tech.*enthusiast/i,
+            /tech.*lover/i,
+            /tech.*gift/i,
+            /gift.*tech/i,
+            /gadget/i
+        ],
+        gift_fitness: [
+            /fitness.*fan/i,
+            /fitness.*gift/i,
+            /gift.*fitness/i,
+            /workout/i,
+            /gym/i
+        ],
+        gift_cook: [
+            /home.*cook/i,
+            /cook.*gift/i,
+            /gift.*cook/i,
+            /kitchen/i,
+            /chef/i
+        ],
+        gift_gamer: [
+            /gamer/i,
+            /gaming/i,
+            /game.*gift/i,
+            /gift.*gamer/i
+        ],
+        gift_reader: [
+            /book.*lover/i,
+            /reader/i,
+            /book.*gift/i,
+            /gift.*book/i
+        ],
+        gift_pet: [
+            /pet.*owner/i,
+            /pet.*parent/i,
+            /pet.*gift/i,
+            /gift.*pet/i,
+            /dog.*owner/i,
+            /cat.*owner/i
+        ],
+        gift_student: [
+            /student/i,
+            /college/i,
+            /school.*gift/i,
+            /gift.*student/i
+        ],
+        gift_traveler: [
+            /traveler/i,
+            /travel.*gift/i,
+            /gift.*travel/i
+        ],
+        gift_parent: [
+            /new.*parent/i,
+            /parent.*gift/i,
+            /baby.*gift/i,
+            /gift.*baby/i
+        ],
         gift_ideas: [
             /gift/i,
             /present/i,
-            /coffee.*lover/i,
-            /tech.*enthusiast/i,
-            /fitness.*fan/i,
-            /home.*cook/i,
-            /gamer/i,
-            /gaming/i,
-            /book.*lover/i,
-            /reader/i,
-            /pet.*owner/i,
-            /student/i,
-            /traveler/i,
-            /parent/i,
             /recommend/i,
             /suggest/i
         ],
@@ -114,8 +166,68 @@ const KnowledgeBase = {
         ],
         gift_ideas: [
             {
-                text: `🎁 **Gift Recommendations by Category**\n\n**☕ Coffee Lover**\n• Keurig K-Mini Coffee Maker - $79\n• Burr Coffee Grinder - $45\n• Contigo Travel Mug - $28\n• Atlas Coffee Club Subscription - $25/mo\n\n**📱 Tech Enthusiast**\n• Apple AirPods (3rd Gen) - $129\n• Echo Dot (5th Gen) - $50\n• Anker PowerCore 20K - $35\n• LED Smart Desk Lamp - $42\n\n**🏃 Fitness Fan**\n• Hydro Flask Smart Bottle - $45\n• Manduka Yoga Mat Bundle - $55\n• Resistance Band Set - $32\n• Fitbit Inspire 3 - $99\n\n**🍳 Home Cook**\n• Instant Pot Duo 7-in-1 - $89\n• Cuisinart Knife Set - $65\n• OXO Kitchen Tool Set - $45\n• Lodge Cast Iron Skillet - $35\n\n**🎮 Gamer**\n• Logitech G502 Gaming Mouse - $49\n• HyperX Cloud Headset - $79\n• RGB Mousepad - $29\n• Steam Gift Card $50 - $50\n\n**📚 Book Lover**\n• Kindle Paperwhite - $139\n• Book Light Clip-On - $16\n• Bookends Set - $28\n• Barnes & Noble Gift Card - $50\n\n**🐾 Pet Owner**\n• Furbo Dog Camera - $99\n• Interactive Cat Toy - $25\n• Self-Cleaning Litter Box - $189\n• Pet Grooming Kit - $39\n\n**🎓 Student**\n• iPad (9th Gen) - $329\n• Anker USB-C Hub - $45\n• Noise-Canceling Headphones - $89\n• Moleskine Classic Notebook - $18\n\n**✈️ Traveler**\n• Samsonite Carry-On - $129\n• Tile Pro Tracker 4-Pack - $79\n• Universal Travel Adapter - $29\n• Portable Luggage Scale - $12\n\n**👶 New Parent**\n• Baby Monitor with Camera - $149\n• Diaper Bag Backpack - $59\n• White Noise Machine - $39\n• Baby Book Memory Journal - $24\n\nNeed suggestions for a specific budget range?`,
-                followUp: ['Under $50', '$50-$100', '$100-$200', 'Premium $200+']
+                text: `🎁 **Gift Recommendations by Category**\n\n**☕ Coffee Lover** • **📱 Tech** • **🏃 Fitness**\n**🍳 Home Cook** • **🎮 Gamer** • **📚 Reader**\n**🐾 Pet Owner** • **🎓 Student** • **✈️ Traveler** • **👶 Parent**\n\nWhich category interests you? Or tell me about the person!`,
+                followUp: ['Coffee Lover', 'Gamer', 'Tech Enthusiast', 'Fitness Fan', 'Home Cook']
+            }
+        ],
+        gift_coffee: [
+            {
+                text: `☕ **Gifts for Coffee Lovers**\n\n• **Keurig K-Mini Coffee Maker** - $79\n  Compact single-serve brewer, perfect for small spaces\n\n• **Burr Coffee Grinder** - $45\n  Consistent grind for better flavor\n\n• **Contigo Travel Mug** - $28\n  Keeps coffee hot for 7+ hours\n\n• **Atlas Coffee Club Subscription** - $25/mo\n  World coffee delivered monthly\n\nPerfect for the caffeine enthusiast! ☕`,
+                followUp: ['Other gift ideas', 'Under $50', 'Tech gifts']
+            }
+        ],
+        gift_tech: [
+            {
+                text: `📱 **Gifts for Tech Enthusiasts**\n\n• **Apple AirPods (3rd Gen)** - $129\n  Spatial audio, wireless charging\n\n• **Echo Dot (5th Gen)** - $50\n  Smart speaker with Alexa\n\n• **Anker PowerCore 20K** - $35\n  Charges phone 4-5 times\n\n• **LED Smart Desk Lamp** - $42\n  App-controlled, adjustable colors\n\nGreat for gadget lovers! 🔌`,
+                followUp: ['Other gift ideas', 'Gamer gifts', 'Student gifts']
+            }
+        ],
+        gift_fitness: [
+            {
+                text: `🏃 **Gifts for Fitness Fans**\n\n• **Hydro Flask Smart Bottle** - $45\n  Temperature tracking, 24hr cold\n\n• **Manduka Yoga Mat Bundle** - $55\n  Premium mat + strap + blocks\n\n• **Resistance Band Set** - $32\n  5 bands with handles, door anchor\n\n• **Fitbit Inspire 3** - $99\n  Tracks steps, heart rate, sleep\n\nPerfect for active lifestyles! 💪`,
+                followUp: ['Other gift ideas', 'Under $50', 'Tech gifts']
+            }
+        ],
+        gift_cook: [
+            {
+                text: `🍳 **Gifts for Home Cooks**\n\n• **Instant Pot Duo 7-in-1** - $89\n  Pressure cooker, slow cooker, rice maker\n\n• **Cuisinart Knife Set** - $65\n  15-piece professional quality\n\n• **OXO Kitchen Tool Set** - $45\n  11 essential gadgets\n\n• **Lodge Cast Iron Skillet** - $35\n  Pre-seasoned 12\" pan\n\nPerfect for culinary enthusiasts! 👨‍🍳`,
+                followUp: ['Other gift ideas', 'Coffee gifts', 'Premium gifts']
+            }
+        ],
+        gift_gamer: [
+            {
+                text: `🎮 **Gifts for Gamers**\n\n• **Logitech G502 Gaming Mouse** - $49\n  11 programmable buttons, RGB\n\n• **HyperX Cloud Headset** - $79\n  7.1 surround sound, noise-canceling mic\n\n• **RGB Mousepad** - $29\n  Large, customizable lighting\n\n• **Steam Gift Card $50** - $50\n  Thousands of games to choose from\n\nLevel up their setup! 🕹️`,
+                followUp: ['Other gift ideas', 'Tech gifts', 'Student gifts']
+            }
+        ],
+        gift_reader: [
+            {
+                text: `📚 **Gifts for Book Lovers**\n\n• **Kindle Paperwhite** - $139\n  Waterproof, adjustable warm light\n\n• **Book Light Clip-On** - $16\n  Rechargeable, 3 brightness levels\n\n• **Bookends Set** - $28\n  Decorative metal design\n\n• **Barnes & Noble Gift Card** - $50\n  Millions of titles available\n\nFor the avid reader! 📖`,
+                followUp: ['Other gift ideas', 'Student gifts', 'Under $50']
+            }
+        ],
+        gift_pet: [
+            {
+                text: `🐾 **Gifts for Pet Owners**\n\n• **Furbo Dog Camera** - $99\n  Treat tossing, barking alerts, 2-way audio\n\n• **Interactive Cat Toy** - $25\n  Automatic feather wand, USB rechargeable\n\n• **Self-Cleaning Litter Box** - $189\n  Automatic scooping, odor control\n\n• **Pet Grooming Kit** - $39\n  Clippers, brushes, nail trimmer\n\nPerfect for pet parents! 🐕🐈`,
+                followUp: ['Other gift ideas', 'Under $50', 'Parent gifts']
+            }
+        ],
+        gift_student: [
+            {
+                text: `🎓 **Gifts for Students**\n\n• **iPad (9th Gen)** - $329\n  Perfect for notes, studying, entertainment\n\n• **Anker USB-C Hub** - $45\n  7-in-1, HDMI, USB, SD card reader\n\n• **Noise-Canceling Headphones** - $89\n  Focus mode for studying\n\n• **Moleskine Classic Notebook** - $18\n  Hard cover, dot grid pages\n\nHelp them succeed! 📝`,
+                followUp: ['Other gift ideas', 'Tech gifts', 'Under $50']
+            }
+        ],
+        gift_traveler: [
+            {
+                text: `✈️ **Gifts for Travelers**\n\n• **Samsonite Carry-On** - $129\n  Spinner wheels, TSA-approved lock\n\n• **Tile Pro Tracker 4-Pack** - $79\n  Find luggage, keys, phone anywhere\n\n• **Universal Travel Adapter** - $29\n  150+ countries, USB ports\n\n• **Portable Luggage Scale** - $12\n  Avoid overweight fees\n\nFor the adventurer! 🌍`,
+                followUp: ['Other gift ideas', 'Tech gifts', '$50-$100']
+            }
+        ],
+        gift_parent: [
+            {
+                text: `👶 **Gifts for New Parents**\n\n• **Baby Monitor with Camera** - $149\n  1080p HD, night vision, 2-way talk\n\n• **Diaper Bag Backpack** - $59\n  18 pockets, insulated, USB port\n\n• **White Noise Machine** - $39\n  20+ sounds, night light, timer\n\n• **Baby Book Memory Journal** - $24\n  First year milestones & photos\n\nSupport new parents! 👪`,
+                followUp: ['Other gift ideas', 'Pet gifts', '$100-$200']
             }
         ],
         products: [
