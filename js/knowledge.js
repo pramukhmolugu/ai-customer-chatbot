@@ -46,6 +46,15 @@ const KnowledgeBase = {
             /coffee.*lover/i,
             /tech.*enthusiast/i,
             /fitness.*fan/i,
+            /home.*cook/i,
+            /gamer/i,
+            /gaming/i,
+            /book.*lover/i,
+            /reader/i,
+            /pet.*owner/i,
+            /student/i,
+            /traveler/i,
+            /parent/i,
             /recommend/i,
             /suggest/i
         ],
@@ -105,8 +114,8 @@ const KnowledgeBase = {
         ],
         gift_ideas: [
             {
-                text: `🎁 **Gift Recommendations**\n\n**Coffee Lover** ☕\n• Premium Coffee Maker - $79\n• Electric Grinder - $45\n• Insulated Travel Mug - $28\n• Coffee Subscription Box - $25/mo\n\n**Tech Enthusiast** 📱\n• Wireless Earbuds - $129\n• Smart Home Starter Kit - $99\n• Portable Charger - $35\n• LED Desk Lamp - $42\n\n**Fitness Fan** 🏃\n• Smart Water Bottle - $45\n• Yoga Mat Set - $55\n• Resistance Bands - $32\n• Fitness Tracker - $89\n\nNeed more ideas for a specific budget?`,
-                followUp: ['Under $50', '$50-$100', 'Premium gifts']
+                text: `🎁 **Gift Recommendations by Category**\n\n**☕ Coffee Lover**\n• Keurig K-Mini Coffee Maker - $79\n• Burr Coffee Grinder - $45\n• Contigo Travel Mug - $28\n• Atlas Coffee Club Subscription - $25/mo\n\n**📱 Tech Enthusiast**\n• Apple AirPods (3rd Gen) - $129\n• Echo Dot (5th Gen) - $50\n• Anker PowerCore 20K - $35\n• LED Smart Desk Lamp - $42\n\n**🏃 Fitness Fan**\n• Hydro Flask Smart Bottle - $45\n• Manduka Yoga Mat Bundle - $55\n• Resistance Band Set - $32\n• Fitbit Inspire 3 - $99\n\n**🍳 Home Cook**\n• Instant Pot Duo 7-in-1 - $89\n• Cuisinart Knife Set - $65\n• OXO Kitchen Tool Set - $45\n• Lodge Cast Iron Skillet - $35\n\n**🎮 Gamer**\n• Logitech G502 Gaming Mouse - $49\n• HyperX Cloud Headset - $79\n• RGB Mousepad - $29\n• Steam Gift Card $50 - $50\n\n**📚 Book Lover**\n• Kindle Paperwhite - $139\n• Book Light Clip-On - $16\n• Bookends Set - $28\n• Barnes & Noble Gift Card - $50\n\n**🐾 Pet Owner**\n• Furbo Dog Camera - $99\n• Interactive Cat Toy - $25\n• Self-Cleaning Litter Box - $189\n• Pet Grooming Kit - $39\n\n**🎓 Student**\n• iPad (9th Gen) - $329\n• Anker USB-C Hub - $45\n• Noise-Canceling Headphones - $89\n• Moleskine Classic Notebook - $18\n\n**✈️ Traveler**\n• Samsonite Carry-On - $129\n• Tile Pro Tracker 4-Pack - $79\n• Universal Travel Adapter - $29\n• Portable Luggage Scale - $12\n\n**👶 New Parent**\n• Baby Monitor with Camera - $149\n• Diaper Bag Backpack - $59\n• White Noise Machine - $39\n• Baby Book Memory Journal - $24\n\nNeed suggestions for a specific budget range?`,
+                followUp: ['Under $50', '$50-$100', '$100-$200', 'Premium $200+']
             }
         ],
         products: [
