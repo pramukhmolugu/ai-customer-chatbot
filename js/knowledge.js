@@ -42,46 +42,65 @@ const KnowledgeBase = {
         ],
         // Gift category patterns - specific takes priority over general
         gift_coffee: [
+            /\bcoffee\b/i,
+            /\bespresso\b/i,
+            /\bcafé\b/i,
+            /\bcaffeine\b/i,
+            /\bbarista\b/i,
             /coffee.*lover/i,
             /coffee.*gift/i,
             /gift.*coffee/i
         ],
         gift_tech: [
+            /\btech\b/i,
+            /\btechnology\b/i,
+            /\bgadget/i,
             /tech.*enthusiast/i,
             /tech.*lover/i,
             /tech.*gift/i,
-            /gift.*tech/i,
-            /gadget/i
+            /gift.*tech/i
         ],
         gift_fitness: [
+            /\bfitness\b/i,
+            /\bworkout\b/i,
+            /\bgym\b/i,
+            /\byoga\b/i,
+            /\bexercise\b/i,
             /fitness.*fan/i,
             /fitness.*gift/i,
-            /gift.*fitness/i,
-            /workout/i,
-            /gym/i
+            /gift.*fitness/i
         ],
         gift_cook: [
+            /\bcook(?:ing)?\b/i,
+            /\bkitchen\b/i,
+            /\bchef\b/i,
+            /\bculinary\b/i,
             /home.*cook/i,
             /cook.*gift/i,
-            /gift.*cook/i,
-            /kitchen/i,
-            /chef/i
+            /gift.*cook/i
         ],
         gift_gamer: [
-            /gamer/i,
-            /gaming/i,
-            /games/i,
+            /\bgamer/i,
+            /\bgaming/i,
+            /\bgames?\b/i,
             /video.*game/i,
             /game.*gift/i,
             /gift.*gamer/i
         ],
         gift_reader: [
+            /\bbooks?\b/i,
+            /\breader/i,
+            /\breading\b/i,
             /book.*lover/i,
-            /reader/i,
             /book.*gift/i,
             /gift.*book/i
         ],
         gift_pet: [
+            /\bpets?\b/i,
+            /\bdog\b/i,
+            /\bcat\b/i,
+            /\bpuppy\b/i,
+            /\bkitten\b/i,
             /pet.*owner/i,
             /pet.*parent/i,
             /pet.*gift/i,
@@ -90,17 +109,25 @@ const KnowledgeBase = {
             /cat.*owner/i
         ],
         gift_student: [
-            /student/i,
-            /college/i,
+            /\bstudent/i,
+            /\bcollege/i,
+            /\buniversity\b/i,
+            /\bschool\b/i,
             /school.*gift/i,
             /gift.*student/i
         ],
         gift_traveler: [
-            /traveler/i,
+            /\btravel(?:er)?\b/i,
+            /\bwanderlust\b/i,
+            /\bbackpack(?:er)?\b/i,
             /travel.*gift/i,
             /gift.*travel/i
         ],
         gift_parent: [
+            /\bparent/i,
+            /\bbaby\b/i,
+            /\binfant\b/i,
+            /\btoddler\b/i,
             /new.*parent/i,
             /parent.*gift/i,
             /baby.*gift/i,
