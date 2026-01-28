@@ -195,24 +195,15 @@ const App = {
             let response;
 
             console.log('🔍 Processing message:', message);
-            console.log('🧠 useGemini:', this.state.useGemini);
-            console.log('🔧 Gemini configured:', GeminiAI.isConfigured());
+            console.log('📚 Using Knowledge Base (Gemini disabled)');
 
-            // Use Gemini if configured, otherwise use knowledge base
-            if (this.state.useGemini && GeminiAI.isConfigured()) {
-                console.log('📡 Calling Gemini API...');
-                response = await GeminiAI.getResponse(message);
-                console.log('📬 Gemini response:', response);
-            } else {
-                console.log('📚 Using knowledge base fallback');
-                // Use knowledge base
-                const kbResponse = KnowledgeBase.processMessage(message);
-                response = {
-                    text: kbResponse.text,
-                    source: 'knowledge_base',
-                    followUp: kbResponse.followUp
-                };
-            }
+            // ALWAYS use knowledge base - Gemini disabled for reliability
+            const kbResponse = KnowledgeBase.processMessage(message);
+            response = {
+                text: kbResponse.text,
+                source: 'knowledge_base',
+                followUp: kbResponse.followUp
+            };
 
             // Hide typing
             ChatUI.hideTyping();
