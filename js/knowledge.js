@@ -70,6 +70,8 @@ const KnowledgeBase = {
         gift_gamer: [
             /gamer/i,
             /gaming/i,
+            /games/i,
+            /video.*game/i,
             /game.*gift/i,
             /gift.*gamer/i
         ],
