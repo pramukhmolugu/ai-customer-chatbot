@@ -6,16 +6,16 @@ An intelligent AI-powered customer support chatbot for e-commerce, featuring a b
 
 **[Try the Chatbot Live](https://ai-customer-chatbot.vercel.app)**
 
-## ✨ Features
+## Features
 
 | Feature | Description |
 |---------|-------------|
-| 🤖 **AI-Powered** | Intelligent responses using hybrid AI + Knowledge Base |
-| 🎨 **Premium UI** | Dark glassmorphism theme with smooth animations |
-| 💬 **Quick Replies** | One-click response buttons for common questions |
-| 📱 **Responsive** | Works perfectly on mobile and desktop |
-| 💾 **Chat History** | Conversations saved in local storage |
-| ⚡ **Fast** | Instant responses for FAQ, AI for complex queries |
+| AI-Powered | Intelligent responses using hybrid AI + Knowledge Base |
+| Premium UI | Dark glassmorphism theme with smooth animations |
+| Quick Replies | One-click response buttons for common questions |
+| Responsive | Works perfectly on mobile and desktop |
+| Chat History | Conversations saved in local storage |
+| Fast | Instant responses for FAQ, AI for complex queries |
 
 ## 🛠️ Tech Stack
 
@@ -24,7 +24,7 @@ An intelligent AI-powered customer support chatbot for e-commerce, featuring a b
 - **Styling**: CSS Variables, Flexbox, Grid
 - **Storage**: LocalStorage
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ai-customer-chatbot/
@@ -39,15 +39,15 @@ ai-customer-chatbot/
 └── README.md
 ```
 
-## 🎯 What It Can Help With
+## What It Can Help With
 
-- 📦 **Order Tracking** - Check order status and delivery
-- 🔄 **Returns & Refunds** - Return policy and process
-- 💳 **Payment Questions** - Payment methods and issues
-- 🚚 **Shipping Info** - Delivery times and costs
-- 🛍️ **Product Recommendations** - Find the right products
+- Order Tracking - Check order status and delivery
+- Returns & Refunds - Return policy and process
+- Payment Questions - Payment methods and issues
+- Shipping Info - Delivery times and costs
+- Product Recommendations - Find the right products
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Run Locally
 
@@ -66,7 +66,7 @@ That's it! No build process or dependencies needed.
 2. Connect repository to [Vercel](https://vercel.com)
 3. Deploy automatically!
 
-## 🧠 How It Works
+## How It Works
 
 1. **User Input** → Message is analyzed
 2. **Intent Detection** → Pattern matching identifies topic
@@ -108,7 +108,7 @@ Edit `css/styles.css` variables:
 }
 ```
 
-## 📊 Skills Demonstrated
+## Skills Demonstrated
 
 - ✅ API Integration (REST, async/await)
 - ✅ DOM Manipulation
@@ -119,7 +119,7 @@ Edit `css/styles.css` variables:
 - ✅ Pattern Matching & Intent Detection
 - ✅ Error Handling & Fallbacks
 
-## 📫 Connect With Me
+## Connect With Me
 
 - **LinkedIn**: [Pramukh Chandra Molugu](https://linkedin.com/in/pramukh-chandra-molugu)
 - **GitHub**: [pramukhmolugu](https://github.com/pramukhmolugu)
